@@ -1,0 +1,23 @@
+ERROR 2025-01-31 18:17:56,830 log Internal Server Error: /fetch_and_process_calls
+Traceback (most recent call last):
+  File "C:\Users\ADMIN\Desktop\task2\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADMIN\Desktop\task2\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: fetch_and_process_calls() takes 0 positional arguments but 1 was given
+ERROR 2025-01-31 18:17:56,834 basehttp "GET /fetch_and_process_calls HTTP/1.1" 500 62670
+ERROR 2025-01-31 18:18:41,831 log Internal Server Error: /fetch_and_process_calls
+Traceback (most recent call last):
+  File "C:\Users\ADMIN\Desktop\task2\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADMIN\Desktop\task2\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADMIN\Desktop\task2\main\views.py", line 177, in fetch_and_process_calls
+    if 'direction' in each_row and 'direction' > 30:
+                                   ^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'str' and 'int'
+ERROR 2025-01-31 18:18:41,842 basehttp "GET /fetch_and_process_calls HTTP/1.1" 500 81449
