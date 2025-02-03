@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'callSummarization.wsgi.application'
 
 DATABASES = {
   'default': {
-    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'ENGINE': 'django.db.backends.postgresql',
     'NAME': 'assemblyai_callsummarization',
     'USER': 'postgres',
-    'PASSWORD': 'BagKpIaFNpc2FF5',
-    'HOST': 'tattoodb-dashboard.c36c242yqbw0.us-west-1.rds.amazonaws.com',
+    'PASSWORD': 'tattooagency2025',
+    'HOST': 'tattooagency-db2.c36c242yqbw0.us-west-1.rds.amazonaws.com',
     'PORT': '5432',
   }
 }
