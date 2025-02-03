@@ -2,7 +2,7 @@ import requests
 import time
 import logging
 from django.conf import settings
-from .models import CallRecord
+from .models import CallRecord, V2
 import json
 from datetime import datetime
 from django.http import JsonResponse
@@ -47,8 +47,7 @@ def transcribe_call(recording_url):
     # Step 1: Initiate transcription
     response = requests.post(url, json=data, headers=headers)
     if response.status_code != 200:
-        return None, None, None    
-        
+        return None, None, None        
 
     transcript_id = response.json()["id"]
     
@@ -56,9 +55,10 @@ def transcribe_call(recording_url):
     while True:
         transcript_response = requests.get(f"{url}/{transcript_id}", headers=headers)
         result = transcript_response.json()
-        print()
-        print(result, 'transcript', result['status'])
-        print()
+
+        # print()        
+        # print('/n', result, 'transcript', result['status'])
+        # print()
         
         if result["status"] == "completed":
             return transcript_id, result.get("text", ""), result.get("summary", "")
@@ -67,11 +67,10 @@ def transcribe_call(recording_url):
 
         time.sleep(5)  # Wait before retrying
 
-
-
-
 def create_note(call_sid):
     print('create note called')
+
+    # Fetch the call details from the CallRecord table
     call_details = CallRecord.objects.get(call_sid=call_sid)
     contact_id = call_details.ghl_contact_id
     url = f"https://services.leadconnectorhq.com/contacts/{contact_id}/notes"
@@ -89,8 +88,8 @@ def create_note(call_sid):
         """
 
     payload = {
-    "userId": contact_id,
-    "body": data
+        "userId": contact_id,
+        "body": data
     }
 
     headers = {
@@ -100,9 +99,23 @@ def create_note(call_sid):
         "Accept": "application/json"
     }
 
+
     response = requests.post(url, json=payload, headers=headers)
 
-    print(response.json(), 'from here')
+
+    note_id = response.json()['note']['id']
+    
+    print('Note ID:', note_id)
+
+    # Store the note_id in the database in the V2 model
+    if not V2.objects.filter(note_id=note_id).exists():
+        v2_record = V2.objects.create(note_id=note_id)
+        v2_record.save()
+        print('Saved')
+    else:
+        print('Note ID already exists, not saved')
+
+    
 
 
 def update_fields(call_sid):
@@ -110,7 +123,7 @@ def update_fields(call_sid):
 
     call_details = CallRecord.objects.get(call_sid=call_sid)
     contact_id = call_details.ghl_contact_id
-    print(call_details, 'call_details', call_details.call_recording_url)
+    # print(call_details, 'call_details', call_details.call_recording_url)
 
 
     url = f"https://services.leadconnectorhq.com/contacts/{contact_id}"
@@ -160,7 +173,7 @@ def update_fields(call_sid):
 
     response = requests.put(url, json=payload, headers=headers)
 
-    print(response.json())
+    # print(response.json())
     return response.json()
     
 def fetch_and_process_calls():
@@ -233,13 +246,8 @@ def fetch_and_process_calls():
             skipvalue += 1000
 
         logging.info(response.text)
-        print()
-        print(len(response_json), 'jfoiaejoij')
-        print()
 
         for each_row in json.loads(response.text)['rows']:
-        #for each_row in response['rows']:
-            # print(each_row, 'each_row')
             if 'callSid' in each_row:
                 call_sid = each_row['callSid']
                 if CallRecord.objects.filter(call_sid=call_sid).exists():
@@ -288,7 +296,7 @@ def fetch_and_process_calls():
                 call_direction = None
 
             if 'duration' in each_row and each_row['duration'] != None and int(each_row['duration']) > 30:
-                print(each_row['duration'], 'duration')
+                # print(each_row['duration'], 'duration')
                 call_duration = each_row['duration']
             else:
                 continue
@@ -352,9 +360,9 @@ def fetch_and_process_calls():
 
             # Transcribe & summarize
             transcript_id, transcription, summary = transcribe_call(recording_url)
+
             if not transcription:
                 continue
-
 
             try:
                 CallRecord.objects.create(
