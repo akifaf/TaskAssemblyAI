@@ -40,7 +40,7 @@ def transcribe_call(recording_url):
         "speech_model": "nano",
         "summarization": True,
         "summary_model": "conversational",
-        "summary_type": "bullets",
+        "summary_type": "headline",
         "dual_channel": True
     }
 
@@ -56,9 +56,9 @@ def transcribe_call(recording_url):
         transcript_response = requests.get(f"{url}/{transcript_id}", headers=headers)
         result = transcript_response.json()
 
-        # print()        
-        # print('/n', result, 'transcript', result['status'])
-        # print()
+        print()        
+        print('/n', result, 'transcript', result['status'])
+        print()
         
         if result["status"] == "completed":
             return transcript_id, result.get("text", ""), result.get("summary", "")
@@ -174,6 +174,7 @@ def update_fields(call_sid):
     response = requests.put(url, json=payload, headers=headers)
 
     # print(response.json())
+    print('/nDONE/n')
     return response.json()
     
 def fetch_and_process_calls():
